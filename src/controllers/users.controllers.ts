@@ -9,12 +9,13 @@ import "dotenv/config";
 import createUserService from "../services/users/createUser.service";
 import readAllUsersService from "../services/users/readAllUsers.service";
 import updateUserService from "../services/users/updateUser.service";
-import deleteUserService from "../services/users/deleteUser.service";
 import recoverUserService from "../services/users/recoverUser.service";
 import readOneUsersService from "../services/users/readOneUser.service";
 import readUserService from "../services/users/readUser.service";
-import { AppError } from "../errors";
+import deleteUserService from "../services/users/deleteUser.service";
 import statusUsersService from "../services/users/statusUser.service";
+
+import { AppError } from "../errors";
 
 
 async function createUserController(req: Request, res: Response): Promise<Response>{
@@ -25,13 +26,13 @@ async function createUserController(req: Request, res: Response): Promise<Respon
      return res.status(201).json(queryService);
 }
 
-async function readAllUsersController(req: Request, res: Response){
+async function readAllUsersController(req: Request, res: Response): Promise<Response>{
      const allUsers = await readAllUsersService();
 
      return res.status(200).json(allUsers);
 }
 
-async function readOneUsersController(req: Request, res: Response){
+async function readOneUsersController(req: Request, res: Response): Promise<Response>{
      const { id } = res.locals;
 
      const OneUser = await readUserService(id);
@@ -39,7 +40,7 @@ async function readOneUsersController(req: Request, res: Response){
      return res.status(200).json(OneUser);
 }
 
-async function updateUserController(req: Request, res: Response){
+async function updateUserController(req: Request, res: Response): Promise<Response>{
      const dataUser:IUpdateUser = req.body;
      const userIdParams:number = parseInt(req.params.id);
      const userIdToken:number = parseInt(res.locals.id);
@@ -108,7 +109,7 @@ async function recoverUserController(req: Request, res: Response): Promise<Respo
     
 }
 
-async function generatorTokenController(req: Request, res: Response) {
+async function generatorTokenController(req: Request, res: Response): Promise<Response>{
 
      const dataUser:ILoginUser= req.body;
 
