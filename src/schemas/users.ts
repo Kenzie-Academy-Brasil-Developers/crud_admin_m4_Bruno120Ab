@@ -9,15 +9,14 @@ const userSchema = z.object({
      active: z.boolean()
 });
 
-const createUserSchema = userSchema.omit({id: true, active: true}).partial({admin:true})
 const readAllUsers = userSchema.omit({password: true});
+const createUserSchema = userSchema.omit({id: true, active: true}).partial({admin:true})
 
 const loginUserSchema = userSchema.pick({email:true, password:true})
-
-const updateUser = createUserSchema.partial();
+const updateUserSchema = userSchema.pick({name:true, email:true, password:true}).partial();
 
 export {
      userSchema,    createUserSchema,
-     readAllUsers,  updateUser,
+     readAllUsers,  updateUserSchema,
      loginUserSchema
 };

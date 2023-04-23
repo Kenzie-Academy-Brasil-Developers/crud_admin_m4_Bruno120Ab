@@ -12,9 +12,6 @@ import { AppError } from "../errors";
 
 import * as encripta from "bcryptjs"
 
-
-//TODOS: Este middleware está completo para rota post/login.
-
 const ensureActiveUserMiddleware =  (schema: ZodTypeAny) => async (req:Request, res:Response, next:NextFunction): Promise<void> => {
      const Body:ILoginUser = schema.parse(req.body);
 
@@ -69,8 +66,6 @@ const ensureActiveUserMiddleware =  (schema: ZodTypeAny) => async (req:Request, 
           Body.password,
           user
      );
-
-     console.log(user, Body.password, comparePassword)
 
      if (comparePassword === false) {
           throw new AppError("Wrong email/password", 401);

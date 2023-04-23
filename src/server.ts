@@ -1,5 +1,6 @@
-import app from './app'
-import { startDatabase } from './database'
+import app from './app';
+
+import { startDatabase } from './database';
 
 const PORT: number = parseInt(process.env.PORT!) || 3000
 

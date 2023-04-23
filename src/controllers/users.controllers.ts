@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 
-import { ICreateUser, ILoginUser, IUserNoPassword } from "../interfaces/user";
+import { ICreateUser, ILoginUser, IUpdateUser, IUser, IUserNoPassword } from "../interfaces/user";
 
 import jwt from "jsonwebtoken";
 
 import "dotenv/config";
-
 
 import createUserService from "../services/users/createUser.service";
 import readAllUsersService from "../services/users/readAllUsers.service";
@@ -13,6 +12,9 @@ import updateUserService from "../services/users/updateUser.service";
 import deleteUserService from "../services/users/deleteUser.service";
 import recoverUserService from "../services/users/recoverUser.service";
 import readOneUsersService from "../services/users/readOneUser.service";
+import readUserService from "../services/users/readUser.service";
+import { AppError } from "../errors";
+import statusUsersService from "../services/users/statusUser.service";
 
 
 async function createUserController(req: Request, res: Response): Promise<Response>{
@@ -23,22 +25,66 @@ async function createUserController(req: Request, res: Response): Promise<Respon
      return res.status(201).json(queryService);
 }
 
-async function readAllUsersController(): Promise<IUserNoPassword[]>{
+async function readAllUsersController(req: Request, res: Response){
      const allUsers = await readAllUsersService();
 
-     return allUsers;
+     return res.status(200).json(allUsers);
 }
 
-async function updateUserController(req: Request, res: Response): Promise<Response>{
-     const dataUser:Partial<ICreateUser> = req.body;
-     const userId:number = parseInt(req.params.id);
+async function readOneUsersController(req: Request, res: Response){
+     const { id } = res.locals;
 
-     const queryService = await updateUserService(dataUser, userId);
+     const OneUser = await readUserService(id);
 
-     return res.status(200).json(queryService);
+     return res.status(200).json(OneUser);
+}
+
+async function updateUserController(req: Request, res: Response){
+     const dataUser:IUpdateUser = req.body;
+     const userIdParams:number = parseInt(req.params.id);
+     const userIdToken:number = parseInt(res.locals.id);
+     const IsAdmin:boolean = res.locals.admin;
+
+
+     if(IsAdmin){
+          const queryService = await updateUserService(dataUser, userIdParams);
+
+          return res.status(200).json(queryService);
+     }else{
+          if( userIdParams !== userIdToken){
+               throw new AppError("Insufficient Permission", 403);
+          }else{
+               const queryService = await updateUserService(dataUser, userIdParams);
+
+               return res.status(200).json(queryService);
+          }
+     }
+
 }
 
 async function deleteUserController(req: Request, res:Response): Promise<Response>{
+     const userIdParams:number = parseInt(req.params.id);
+     const userIdToken:number = parseInt(res.locals.id);
+     const IsAdmin:boolean = res.locals.admin;
+
+     if(IsAdmin){
+          await deleteUserService(userIdParams);
+
+          return res.status(204 ).send();
+     }else{
+          if( userIdParams !== userIdToken){
+               throw new AppError("Insufficient Permission", 403);
+          }else{
+               await deleteUserService(userIdParams);
+
+               return res.status(204 ).send();
+          }
+     }
+
+
+
+
+
      const userId:number = parseInt(req.params.id);
 
      await deleteUserService(userId);
@@ -48,10 +94,18 @@ async function deleteUserController(req: Request, res:Response): Promise<Respons
 
 async function recoverUserController(req: Request, res: Response): Promise<Response>{
      const userId:number = parseInt(req.params.id);
+     const IsAdmin:boolean = res.locals.admin;
 
-     await recoverUserService(userId);
+     const queryService = await statusUsersService(userId);
 
-     return res.status(204).send();
+     if (queryService){
+          throw new AppError("User already active",400)
+     }
+
+     const queryResult = await recoverUserService(userId);
+
+     return res.status(200).json(queryResult);
+    
 }
 
 async function generatorTokenController(req: Request, res: Response) {
@@ -64,7 +118,7 @@ async function generatorTokenController(req: Request, res: Response) {
           {
             admin: user.admin,
           },
-          process.env.SECRET_KEY!, //TODOS: Passe para o .env
+          process.env.SECRET_KEY!, 
           {
             expiresIn: "1d",
             subject: user.id.toString(),
@@ -77,5 +131,6 @@ async function generatorTokenController(req: Request, res: Response) {
 export {
      createUserController,    readAllUsersController,
      updateUserController,    deleteUserController,
-     recoverUserController,   generatorTokenController
+     recoverUserController,   generatorTokenController,
+     readOneUsersController
 }    

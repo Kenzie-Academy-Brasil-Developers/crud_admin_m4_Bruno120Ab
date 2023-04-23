@@ -1,8 +1,8 @@
 import { QueryConfig } from "pg";
 
 import { client } from "../../database";
-import { ILoginUser } from "../../interfaces/user";
 
+import { ILoginUser } from "../../interfaces/user";
 
 async function readOneUsersService(data:ILoginUser){
 

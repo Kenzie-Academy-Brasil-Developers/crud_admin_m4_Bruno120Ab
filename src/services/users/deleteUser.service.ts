@@ -1,9 +1,10 @@
-
 import { QueryConfig, QueryResult } from "pg";
+
 import { IUser } from "../../interfaces/user";
+
 import { client } from "../../database";
 
-async function deleteUserService(userId:number){
+async function deleteUserService(userId:number): Promise<IUser> {
 
      const queryTemplate: string = ` UPDATE users SET active = 'false' WHERE id = $1 `;
 

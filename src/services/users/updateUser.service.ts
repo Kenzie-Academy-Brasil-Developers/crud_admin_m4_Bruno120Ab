@@ -1,21 +1,13 @@
 import format from "pg-format";
 import { QueryConfig, QueryResult } from "pg";
-import { ICreateUser, IUser } from "../../interfaces/user";
+
+import { IUpdateUser, IUser } from "../../interfaces/user";
+
 import { client } from "../../database";
 
+async function updateUserService(data: IUpdateUser, userId:number){
 
-
-async function updateUserService(data: Partial<ICreateUser>, userId:number){
-
-     const queryTemplate: string = format(
-          `
-               UPDATE users
-                    SET(%I) = ROW(%L)
-               WHERE
-                    id = $1
-               RETURNING
-                    *;
-          `,
+     const queryTemplate: string = format(` UPDATE users SET(%I) = ROW(%L) WHERE id = $1 RETURNING "id", "name", "email", "admin", "active"; `,
           Object.keys(data),
           Object.values(data)
      )

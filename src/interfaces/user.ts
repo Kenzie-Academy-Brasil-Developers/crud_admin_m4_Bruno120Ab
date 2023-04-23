@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-import { userSchema } from "../schemas/users";
+import { userSchema, updateUserSchema } from "../schemas/users";
 
 export type IUser = z.infer<typeof userSchema>;
+export type IUpdateUser = z.infer<typeof updateUserSchema>
 
 export type ICreateUser = Omit<IUser, 'id' | 'active'>;
 export type IUserNoPassword = Omit<IUser, 'password'>;

@@ -1,22 +1,42 @@
 import { Router } from 'express';
 
-import { createUserSchema } from '../schemas/users';
+import { createUserSchema, updateUserSchema } from '../schemas/users';
 
 import { createUserController,     deleteUserController,
-         readAllUsersController,   recoverUserController,
+         readAllUsersController,   readOneUsersController,   recoverUserController,
          updateUserController } from '../controllers/users.controllers';
 
 import ensureBodyIsValidMiddleware from '../middlewares/ensureBody';
 import ensureEmailNotExistsMiddleware from '../middlewares/ensureEmail';
+import ensureTokenIsValidMiddleware from '../middlewares/ensureToken';
+import ensureIsAdminMiddleware from '../middlewares/ensureIsAdmin';
+import ensureIdUserMiddleware from '../middlewares/ensureId';
 
 const userRoutes: Router = Router();
 
-userRoutes.post('',           ensureBodyIsValidMiddleware(createUserSchema),     ensureEmailNotExistsMiddleware,   createUserController);                                           //TODOS:  OK!.               
-// userRoutes.get('',);                                                                                                                                                              //TODOS: Conclua o middleware(só falta validar a senha). Construa o controller. 
-userRoutes.get('',                                                                                                 readAllUsersController);
-userRoutes.patch('/:id',                                                                                           updateUserController );
-userRoutes.delete('/:id',                                                                                          deleteUserController);                                     //TODOS: Realizar um softDelete (active = FALSE).
-userRoutes.put('/:id/recover',                                                                                     recoverUserController);                                   //TODOS: Realizar um softRecover (active = TRUE).
+userRoutes.post('',                
+     ensureBodyIsValidMiddleware(createUserSchema),    ensureEmailNotExistsMiddleware,                                                 
+     createUserController);   
+
+userRoutes.get('',                 
+     ensureTokenIsValidMiddleware,                     ensureIsAdminMiddleware,                                                       
+     readAllUsersController);
+
+userRoutes.get('/profile',         
+     ensureTokenIsValidMiddleware,                     ensureIsAdminMiddleware,                                                        
+     readOneUsersController);      
+                                                                                                                                                            
+userRoutes.patch('/:id',           
+     ensureIdUserMiddleware,                           ensureBodyIsValidMiddleware(updateUserSchema),    
+     ensureTokenIsValidMiddleware,                     updateUserController); 
+
+userRoutes.delete('/:id',          
+     ensureIdUserMiddleware,                           ensureTokenIsValidMiddleware ,                                                  
+     deleteUserController);                                    
+     
+userRoutes.put('/:id/recover',                         ensureIdUserMiddleware,                           
+     ensureTokenIsValidMiddleware,                     ensureIsAdminMiddleware,      
+     recoverUserController);                                   
 
 export default userRoutes;    
 
