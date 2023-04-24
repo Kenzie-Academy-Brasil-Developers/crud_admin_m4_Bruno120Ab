@@ -15,27 +15,37 @@ import ensureIdUserMiddleware from '../middlewares/ensureId';
 const userRoutes: Router = Router();
 
 userRoutes.post('',                
-     ensureBodyIsValidMiddleware(createUserSchema),    ensureEmailNotExistsMiddleware,                                                 
+     ensureBodyIsValidMiddleware(createUserSchema),    
+     ensureEmailNotExistsMiddleware,                                                 
      createUserController);   
 
 userRoutes.get('',                 
-     ensureTokenIsValidMiddleware,                     ensureIsAdminMiddleware,                                                       
+     ensureTokenIsValidMiddleware,                     
+     ensureIsAdminMiddleware,                                                       
      readAllUsersController);
 
 userRoutes.get('/profile',         
-     ensureTokenIsValidMiddleware,                     ensureIsAdminMiddleware,                                                        
+     ensureTokenIsValidMiddleware,                     
+     ensureIsAdminMiddleware,                                                        
      readOneUsersController);      
                                                                                                                                                             
 userRoutes.patch('/:id',           
-     ensureIdUserMiddleware,                           ensureBodyIsValidMiddleware(updateUserSchema),    
-     ensureTokenIsValidMiddleware,                     updateUserController); 
+     ensureTokenIsValidMiddleware, 
+     ensureIsAdminMiddleware,                                                        
+     ensureIdUserMiddleware,                          
+     ensureBodyIsValidMiddleware(updateUserSchema),    
+     updateUserController); 
 
-userRoutes.delete('/:id',          
-     ensureIdUserMiddleware,                           ensureTokenIsValidMiddleware ,                                                  
+userRoutes.delete('/:id', 
+     ensureTokenIsValidMiddleware ,  
+     ensureIsAdminMiddleware,              
+     ensureIdUserMiddleware,                                             
      deleteUserController);                                    
      
-userRoutes.put('/:id/recover',                         ensureIdUserMiddleware,                           
-     ensureTokenIsValidMiddleware,                     ensureIsAdminMiddleware,      
+userRoutes.put('/:id/recover',                         
+     ensureIdUserMiddleware,                           
+     ensureTokenIsValidMiddleware,                    
+     ensureIsAdminMiddleware,      
      recoverUserController);                                   
 
 export default userRoutes;    

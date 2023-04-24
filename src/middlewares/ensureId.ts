@@ -1,5 +1,3 @@
-import { ZodTypeAny } from "zod";
-
 import { NextFunction, Request, Response } from "express";
 import { QueryConfig, QueryResult } from "pg";
 

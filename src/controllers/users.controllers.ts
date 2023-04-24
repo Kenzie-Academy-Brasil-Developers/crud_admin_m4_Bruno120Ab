@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { ICreateUser, ILoginUser, IUpdateUser, IUser, IUserNoPassword } from "../interfaces/user";
+import { ICreateUser, ILoginUser, IUpdateUser } from "../interfaces/user";
 
 import jwt from "jsonwebtoken";
 
@@ -13,10 +13,6 @@ import recoverUserService from "../services/users/recoverUser.service";
 import readOneUsersService from "../services/users/readOneUser.service";
 import readUserService from "../services/users/readUser.service";
 import deleteUserService from "../services/users/deleteUser.service";
-import statusUsersService from "../services/users/statusUser.service";
-
-import { AppError } from "../errors";
-
 
 async function createUserController(req: Request, res: Response): Promise<Response>{
      const dataUser:ICreateUser = req.body;
@@ -43,70 +39,26 @@ async function readOneUsersController(req: Request, res: Response): Promise<Resp
 async function updateUserController(req: Request, res: Response): Promise<Response>{
      const dataUser:IUpdateUser = req.body;
      const userIdParams:number = parseInt(req.params.id);
-     const userIdToken:number = parseInt(res.locals.id);
-     const IsAdmin:boolean = res.locals.admin;
 
+     const queryService = await updateUserService(dataUser, userIdParams);
 
-     if(IsAdmin){
-          const queryService = await updateUserService(dataUser, userIdParams);
-
-          return res.status(200).json(queryService);
-     }else{
-          if( userIdParams !== userIdToken){
-               throw new AppError("Insufficient Permission", 403);
-          }else{
-               const queryService = await updateUserService(dataUser, userIdParams);
-
-               return res.status(200).json(queryService);
-          }
-     }
-
+     return res.status(200).json(queryService);
 }
 
 async function deleteUserController(req: Request, res:Response): Promise<Response>{
      const userIdParams:number = parseInt(req.params.id);
-     const userIdToken:number = parseInt(res.locals.id);
-     const IsAdmin:boolean = res.locals.admin;
+     
+     await deleteUserService(userIdParams);
 
-     if(IsAdmin){
-          await deleteUserService(userIdParams);
-
-          return res.status(204 ).send();
-     }else{
-          if( userIdParams !== userIdToken){
-               throw new AppError("Insufficient Permission", 403);
-          }else{
-               await deleteUserService(userIdParams);
-
-               return res.status(204 ).send();
-          }
-     }
-
-
-
-
-
-     const userId:number = parseInt(req.params.id);
-
-     await deleteUserService(userId);
-
-     return res.status(204).send();
+     return res.status(204 ).send();
 }
 
 async function recoverUserController(req: Request, res: Response): Promise<Response>{
      const userId:number = parseInt(req.params.id);
-     const IsAdmin:boolean = res.locals.admin;
-
-     const queryService = await statusUsersService(userId);
-
-     if (queryService){
-          throw new AppError("User already active",400)
-     }
 
      const queryResult = await recoverUserService(userId);
 
      return res.status(200).json(queryResult);
-    
 }
 
 async function generatorTokenController(req: Request, res: Response): Promise<Response>{
