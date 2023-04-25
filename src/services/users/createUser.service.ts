@@ -10,7 +10,13 @@ import * as encripta from "bcryptjs"
 async function createUserService(data:ICreateUser): Promise<IUser>{
      data.password = await encripta.hash(data.password, 10);
 
-     const queryTemplate: string = format(`INSERT INTO users(%I) VALUES (%L) RETURNING "id", "name", "email", "admin", "active";`,
+     const queryTemplate: string = format(
+          `INSERT INTO 
+               users(%I) 
+          VALUES 
+               (%L) 
+          RETURNING 
+               "id", "name", "email", "admin", "active";`,
           Object.keys(data),
           Object.values(data)
      );

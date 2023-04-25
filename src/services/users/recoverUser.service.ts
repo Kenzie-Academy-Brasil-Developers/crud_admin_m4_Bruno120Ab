@@ -15,7 +15,15 @@ async function recoverUserService(userId:number): Promise<IUserNoPassword>{
           throw new AppError("User already active",400)
      }
 
-     const queryTemplate: string = ` UPDATE users SET active = 'true' WHERE id = $1 RETURNING  "id", "name", "email", "admin", "active" `;
+     const queryTemplate: string = 
+          `UPDATE 
+               users 
+          SET 
+               active = 'true' 
+          WHERE 
+               id = $1 
+          RETURNING  
+               "id", "name", "email", "admin", "active" `;
 
      const queryConfig:QueryConfig = {
           text: queryTemplate,

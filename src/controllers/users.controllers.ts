@@ -65,19 +65,8 @@ async function generatorTokenController(req: Request, res: Response): Promise<Re
 
      const dataUser:ILoginUser= req.body;
 
-     const user = await readOneUsersService(dataUser);
+     const token = await readOneUsersService(dataUser);
 
-     const token: string = jwt.sign(
-          {
-            admin: user.admin,
-          },
-          process.env.SECRET_KEY!, 
-          {
-            expiresIn: "1d",
-            subject: user.id.toString(),
-          }
-        );
-      
      return res.status(200).json({token});
 }
 

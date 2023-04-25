@@ -6,7 +6,13 @@ import { IUserNoPassword } from "../../interfaces/user";
 
 async function readUserService(id:number): Promise<IUserNoPassword> {
 
-     const queryTemplate = ` SELECT "id", "name", "email", "admin", "active" FROM users WHERE id = $1; `;
+     const queryTemplate = 
+          `SELECT 
+               "id", "name", "email", "admin", "active" 
+          FROM 
+               users 
+          WHERE 
+               id = $1; `;
 
      const queryConfig = {
           text: queryTemplate,

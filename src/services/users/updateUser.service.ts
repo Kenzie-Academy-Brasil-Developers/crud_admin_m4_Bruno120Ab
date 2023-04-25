@@ -7,7 +7,14 @@ import { client } from "../../database";
 
 async function updateUserService(data: IUpdateUser, userId:number){
 
-     const queryTemplate: string = format(` UPDATE users SET(%I) = ROW(%L) WHERE id = $1 RETURNING "id", "name", "email", "admin", "active"; `,
+     const queryTemplate: string = format(
+          `UPDATE 
+               users 
+          SET(%I) = ROW(%L) 
+          WHERE 
+               id = $1 
+          RETURNING 
+               "id", "name", "email", "admin", "active"; `,
           Object.keys(data),
           Object.values(data)
      )
