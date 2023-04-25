@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": " jest --forceExit --runInBand",
+    "test": "cross-env NODE_ENV=test SECRET_KEY=chavesecreta jest --forceExit --runInBand",
     "dev": "ts-node-dev --cls --rs --ignore-watch node_modules src/server.ts"
   },
   "keywords": [],
